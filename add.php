@@ -78,27 +78,39 @@ function __dbConn(){
 
 function api_add_new_data($data) {
 	$conn = __dbConn();
-	$fnama = $data['nama'];
-	$femail = $data['email'];
-	$ftelefon = $data['telefon'];
 	
-	$stmt = $conn->prepare("INSERT INTO users(nama,email,telefon) VALUES(:nama, :email, :telefon)");
-	$stmt->bindparam(":nama", $fname);
-	$stmt->bindparam(":email", $femail);
-	$stmt->bindparam(":telefon", $ftelefon);
-	if ($stmt->execute()) {
-		$lastInsertId = $conn->lastInsertId(); //Get Last ID after insert
-		$dataTrue = array(
-			'status' => 'berjaya',
-			'data' => array('id' => $lastInsertId, 'nama' => $fnama, 'email' => $femail, 'telefon' => $ftelefon)
-		);
-		return $dataTrue;
+	if((isset($data['nama']) && $data['nama'] != '' ) 
+	   ||(isset($data['email']) && $data['email'] != '' ) 
+	   ||(isset($data['telefon']) && $data['telefon'] != '' ) )){
+		$fnama = $data['nama'];
+		$femail = $data['email'];
+		$ftelefon = $data['telefon'];
+
+		$stmt = $conn->prepare("INSERT INTO users(nama,email,telefon) VALUES(:nama, :email, :telefon)");
+		$stmt->bindparam(":nama", $fname);
+		$stmt->bindparam(":email", $femail);
+		$stmt->bindparam(":telefon", $ftelefon);
+		if ($stmt->execute()) {
+			$lastInsertId = $conn->lastInsertId(); //Get Last ID after insert
+			$dataTrue = array(
+				'status' => 'berjaya',
+				'data' => array('id' => $lastInsertId, 'nama' => $fnama, 'email' => $femail, 'telefon' => $ftelefon)
+			);
+			return $dataTrue;
+		}else{
+			$dataFalse = array(
+				'status' => 'gagal',
+				'mesej'=>'data empty',
+				'data' => []
+			);
+			return $dataFalse;
+		}
 	}else{
 		$dataFalse = array(
 			'status' => 'gagal',
-			'mesej'=>'data empty',
+			'mesej'=>'invalid data',
 			'data' => []
 		);
 		return $dataFalse;
-	}	
+	}
 }
